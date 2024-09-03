@@ -1,11 +1,15 @@
 package v1beta1
 
 import (
+	"context"
+	"fmt"
 	"github.com/authzed/grpcutil"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	kesselrel "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta1/relationships"
 	kessel "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta1/resources"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	nethttp "net/http"
 )
 
 type Inventory interface {
@@ -20,6 +24,15 @@ type inventoryClient struct {
 	tokenClient                     *TokenClient
 }
 
+type inventoryHttpClient struct {
+	K8sClusterService               kessel.KesselK8SClusterServiceHTTPClient
+	PolicyRelationshipServiceClient kesselrel.KesselPolicyRelationshipServiceHTTPClient
+	PolicyServiceClient             kessel.KesselK8SPolicyServiceHTTPClient
+	RhelHostServiceClient           kessel.KesselRhelHostServiceHTTPClient
+	tokenClient                     *TokenClient
+}
+
+var _ Inventory = &inventoryHttpClient{}
 var _ Inventory = &inventoryClient{}
 
 func New(config *Config) (*inventoryClient, error) {
@@ -58,6 +71,31 @@ func New(config *Config) (*inventoryClient, error) {
 	}, err
 }
 
+func NewHttpClient(ctx context.Context, config *Config) (*inventoryHttpClient, error) {
+	var tokencli *TokenClient
+	if config.enableOIDCAuth {
+		tokencli = NewTokenClient(config)
+	}
+
+	var opts []http.ClientOption
+	if config.httpUrl != "" {
+		opts = append(opts, http.WithEndpoint(config.httpUrl))
+	}
+
+	client, err := http.NewClient(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &inventoryHttpClient{
+		K8sClusterService:               kessel.NewKesselK8SClusterServiceHTTPClient(client),
+		PolicyRelationshipServiceClient: kesselrel.NewKesselPolicyRelationshipServiceHTTPClient(client),
+		PolicyServiceClient:             kessel.NewKesselK8SPolicyServiceHTTPClient(client),
+		RhelHostServiceClient:           kessel.NewKesselRhelHostServiceHTTPClient(client),
+		tokenClient:                     tokencli,
+	}, nil
+}
+
 func (a inventoryClient) GetTokenCallOption() ([]grpc.CallOption, error) {
 	var opts []grpc.CallOption
 	opts = append(opts, grpc.EmptyCallOption{})
@@ -71,5 +109,17 @@ func (a inventoryClient) GetTokenCallOption() ([]grpc.CallOption, error) {
 		opts = append(opts, WithBearerToken(token.AccessToken))
 	}
 
+	return opts, nil
+}
+
+func (a inventoryHttpClient) GetTokenHTTPOption() ([]http.CallOption, error) {
+	var opts []http.CallOption
+	token, err := a.tokenClient.GetToken()
+	if err != nil {
+		return nil, err
+	}
+	header := nethttp.Header{}
+	header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
+	opts = append(opts, http.Header(&header))
 	return opts, nil
 }

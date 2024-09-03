@@ -53,7 +53,7 @@ func NewTokenClient(config *Config) *TokenClient {
 	return &TokenClient{
 		clientId:       config.clientId,
 		clientSecret:   config.clientSecret,
-		url:            config.url,
+		url:            config.authServerTokenUrl,
 		EnableOIDCAuth: config.enableOIDCAuth,
 		Insecure:       config.insecure,
 		cache:          cache.New(tokenLifeDuration, cacheCleanupInterval),

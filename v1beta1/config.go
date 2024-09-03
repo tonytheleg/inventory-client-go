@@ -3,6 +3,7 @@ package v1beta1
 type Config struct {
 	insecure           bool
 	url                string
+	httpUrl            string
 	enableOIDCAuth     bool
 	clientId           string
 	clientSecret       string
@@ -23,6 +24,12 @@ func WithAuthEnabled(clientId string, clientSecret string, authServerTokenUrl st
 func WithgRPCUrl(url string) ClientOptions {
 	return func(c *Config) {
 		c.url = url
+	}
+}
+
+func WithHTTPUrl(url string) ClientOptions {
+	return func(c *Config) {
+		c.httpUrl = url
 	}
 }
 
