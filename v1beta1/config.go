@@ -1,5 +1,7 @@
 package v1beta1
 
+import "crypto/tls"
+
 type Config struct {
 	insecure           bool
 	url                string
@@ -8,6 +10,7 @@ type Config struct {
 	clientId           string
 	clientSecret       string
 	authServerTokenUrl string
+	tlsConfig          *tls.Config
 }
 
 type ClientOptions func(*Config)
@@ -36,6 +39,13 @@ func WithHTTPUrl(url string) ClientOptions {
 func WithTLSInsecure(insecure bool) ClientOptions {
 	return func(c *Config) {
 		c.insecure = insecure
+	}
+}
+
+func WithHTTPTLSConfig(tlsConfig *tls.Config) ClientOptions {
+	return func(c *Config) {
+		c.insecure = false
+		c.tlsConfig = tlsConfig
 	}
 }
 

@@ -82,6 +82,10 @@ func NewHttpClient(ctx context.Context, config *Config) (*inventoryHttpClient, e
 		opts = append(opts, http.WithEndpoint(config.httpUrl))
 	}
 
+	if !config.insecure {
+		opts = append(opts, http.WithTLSConfig(config.tlsConfig))
+	}
+
 	client, err := http.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err

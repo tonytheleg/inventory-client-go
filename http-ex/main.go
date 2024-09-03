@@ -10,8 +10,10 @@ import (
 func main() {
 
 	client, err := v1beta1.NewHttpClient(context.Background(),
-		v1beta1.NewConfig(v1beta1.WithHTTPUrl("localhost:8081"))) //v1beta1.WithAuthEnabled("svc-test", "", "http://localhost:8084/realms/redhat-external/protocol/openid-connect/token"),
-
+		v1beta1.NewConfig(v1beta1.WithHTTPUrl("localhost:8081")))
+	v1beta1.WithTLSInsecure(true)
+	//v1beta1.WithAuthEnabled("svc-test", "", "http://localhost:8084/realms/redhat-external/protocol/openid-connect/token"),
+	//v1beta1.WithHTTPTLSConfig(tls.Config{})
 	if err != nil {
 		fmt.Println(err)
 	}
