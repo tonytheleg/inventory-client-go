@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+
 	kessel "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta1/resources"
-	"inventory-client-go/v1beta1"
+	"github.com/project-kessel/inventory-client-go/v1beta1"
 )
 
 func main() {

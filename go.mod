@@ -1,11 +1,10 @@
-module inventory-client-go
+module github.com/project-kessel/inventory-client-go
 
 go 1.22.5
 
-toolchain go1.22.6
-
 require (
 	github.com/authzed/grpcutil v0.0.0-20240123194739-2ea1e3d2d98b
+	github.com/go-kratos/kratos/v2 v2.8.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/project-kessel/inventory-api v0.0.0-20240902141731-aad011c715fd
@@ -18,7 +17,6 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.1.0 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect
-	github.com/go-kratos/kratos/v2 v2.8.0 // indirect
 	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
