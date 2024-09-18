@@ -3,17 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+
 	kessel "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta1/resources"
-	"inventory-client-go/v1beta1"
+	"github.com/project-kessel/inventory-client-go/v1beta1"
 )
 
 func main() {
-
 	client, err := v1beta1.NewHttpClient(context.Background(),
 		v1beta1.NewConfig(v1beta1.WithHTTPUrl("localhost:8081")))
 	v1beta1.WithTLSInsecure(true)
-	//v1beta1.WithAuthEnabled("svc-test", "", "http://localhost:8084/realms/redhat-external/protocol/openid-connect/token"),
-	//v1beta1.WithHTTPTLSConfig(tls.Config{})
+	// v1beta1.WithAuthEnabled("svc-test", "", "http://localhost:8084/realms/redhat-external/protocol/openid-connect/token"),
+	// v1beta1.WithHTTPTLSConfig(tls.Config{})
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -31,7 +31,7 @@ func main() {
 			ReporterVersion:    "0.1",
 		},
 	}}
-	//optts, err := client.GetTokenHTTPOption()
+	// optts, err := client.GetTokenHTTPOption()
 	resp, err := client.RhelHostServiceClient.CreateRhelHost(context.Background(), &request)
 	if err != nil {
 		fmt.Println(err)
