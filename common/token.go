@@ -1,4 +1,4 @@
-package v1beta1
+package common
 
 import (
 	"bytes"
@@ -54,8 +54,8 @@ func NewTokenClient(config *Config) *TokenClient {
 		clientId:       config.clientId,
 		clientSecret:   config.clientSecret,
 		url:            config.authServerTokenUrl,
-		EnableOIDCAuth: config.enableOIDCAuth,
-		Insecure:       config.insecure,
+		EnableOIDCAuth: config.EnableOIDCAuth,
+		Insecure:       config.Insecure,
 		cache:          cache.New(tokenLifeDuration, cacheCleanupInterval),
 	}
 }

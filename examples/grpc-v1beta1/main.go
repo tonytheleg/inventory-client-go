@@ -3,16 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-
 	kessel "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta1/resources"
+	"github.com/project-kessel/inventory-client-go/common"
 	"github.com/project-kessel/inventory-client-go/v1beta1"
 )
 
 func main() {
-	client, err := v1beta1.New(v1beta1.NewConfig(
-		v1beta1.WithgRPCUrl("localhost:9081"),
-		v1beta1.WithTLSInsecure(true),
-		v1beta1.WithAuthEnabled("", "", ""),
+	client, err := v1beta1.New(common.NewConfig(
+		common.WithgRPCUrl("localhost:9081"),
+		common.WithTLSInsecure(true),
+		common.WithAuthEnabled("", "", ""),
 	))
 	if err != nil {
 		fmt.Println(err)
@@ -21,7 +21,7 @@ func main() {
 	request := kessel.CreateRhelHostRequest{RhelHost: &kessel.RhelHost{
 		Metadata: &kessel.Metadata{
 			ResourceType: "rhel-host",
-			Workspace:    "",
+			WorkspaceId:  "",
 		},
 		ReporterData: &kessel.ReporterData{
 			ReporterType:       kessel.ReporterData_ACM,

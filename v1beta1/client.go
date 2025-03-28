@@ -3,6 +3,7 @@ package v1beta1
 import (
 	"context"
 	"fmt"
+	"github.com/project-kessel/inventory-client-go/common"
 	nethttp "net/http"
 
 	"github.com/authzed/grpcutil"
@@ -22,7 +23,7 @@ type InventoryClient struct {
 	RhelHostServiceClient                          kessel.KesselRhelHostServiceClient
 	NotificationIntegrationServiceClient           kessel.KesselNotificationsIntegrationServiceClient
 	gRPCConn                                       *grpc.ClientConn
-	tokenClient                                    *TokenClient
+	tokenClient                                    *common.TokenClient
 }
 
 type InventoryHttpClient struct {
@@ -31,7 +32,7 @@ type InventoryHttpClient struct {
 	PolicyServiceClient                                kessel.KesselK8SPolicyServiceHTTPClient
 	RhelHostServiceClient                              kessel.KesselRhelHostServiceHTTPClient
 	NotificationIntegrationClient                      kessel.KesselNotificationsIntegrationServiceHTTPClient
-	tokenClient                                        *TokenClient
+	tokenClient                                        *common.TokenClient
 }
 
 var (
@@ -39,15 +40,15 @@ var (
 	_ Inventory = &InventoryClient{}
 )
 
-func New(config *Config) (*InventoryClient, error) {
+func New(config *common.Config) (*InventoryClient, error) {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.EmptyDialOption{})
-	var tokencli *TokenClient
-	if config.enableOIDCAuth {
-		tokencli = NewTokenClient(config)
+	var tokencli *common.TokenClient
+	if config.EnableOIDCAuth {
+		tokencli = common.NewTokenClient(config)
 	}
 
-	if config.insecure {
+	if config.Insecure {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else {
 		tlsConfig, err := grpcutil.WithSystemCerts(grpcutil.VerifyCA)
@@ -58,7 +59,7 @@ func New(config *Config) (*InventoryClient, error) {
 	}
 
 	conn, err := grpc.NewClient(
-		config.url,
+		config.Url,
 		opts...,
 	)
 	if err != nil {
@@ -76,19 +77,19 @@ func New(config *Config) (*InventoryClient, error) {
 	}, err
 }
 
-func NewHttpClient(ctx context.Context, config *Config) (*InventoryHttpClient, error) {
-	var tokencli *TokenClient
-	if config.enableOIDCAuth {
-		tokencli = NewTokenClient(config)
+func NewHttpClient(ctx context.Context, config *common.Config) (*InventoryHttpClient, error) {
+	var tokencli *common.TokenClient
+	if config.EnableOIDCAuth {
+		tokencli = common.NewTokenClient(config)
 	}
 
 	var opts []http.ClientOption
-	if config.httpUrl != "" {
-		opts = append(opts, http.WithEndpoint(config.httpUrl))
+	if config.HttpUrl != "" {
+		opts = append(opts, http.WithEndpoint(config.HttpUrl))
 	}
 
-	if !config.insecure {
-		opts = append(opts, http.WithTLSConfig(config.tlsConfig))
+	if !config.Insecure {
+		opts = append(opts, http.WithTLSConfig(config.TlsConfig))
 	}
 
 	client, err := http.NewClient(ctx, opts...)
@@ -114,9 +115,9 @@ func (a InventoryClient) GetTokenCallOption() ([]grpc.CallOption, error) {
 		return nil, err
 	}
 	if a.tokenClient.Insecure {
-		opts = append(opts, WithInsecureBearerToken(token.AccessToken))
+		opts = append(opts, common.WithInsecureBearerToken(token.AccessToken))
 	} else {
-		opts = append(opts, WithBearerToken(token.AccessToken))
+		opts = append(opts, common.WithBearerToken(token.AccessToken))
 	}
 
 	return opts, nil
