@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-
 	kessel "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta1/resources"
+	"github.com/project-kessel/inventory-client-go/common"
 	"github.com/project-kessel/inventory-client-go/v1beta1"
 )
 
 func main() {
 	client, err := v1beta1.NewHttpClient(context.Background(),
-		v1beta1.NewConfig(v1beta1.WithHTTPUrl("localhost:8081")))
-	v1beta1.WithTLSInsecure(true)
+		common.NewConfig(common.WithHTTPUrl("localhost:8081")))
+	common.WithTLSInsecure(true)
 	// v1beta1.WithAuthEnabled("svc-test", "", "http://localhost:8084/realms/redhat-external/protocol/openid-connect/token"),
 	// v1beta1.WithHTTPTLSConfig(tls.Config{})
 	if err != nil {
@@ -20,7 +20,7 @@ func main() {
 	request := kessel.CreateRhelHostRequest{RhelHost: &kessel.RhelHost{
 		Metadata: &kessel.Metadata{
 			ResourceType: "rhel-host",
-			Workspace:    "",
+			WorkspaceId:  "",
 		},
 		ReporterData: &kessel.ReporterData{
 			ReporterType:       kessel.ReporterData_ACM,
