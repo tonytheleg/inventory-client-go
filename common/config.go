@@ -1,6 +1,9 @@
 package common
 
-import "crypto/tls"
+import (
+	"crypto/tls"
+	"time"
+)
 
 type Config struct {
 	Insecure           bool
@@ -11,6 +14,7 @@ type Config struct {
 	clientSecret       string
 	authServerTokenUrl string
 	TlsConfig          *tls.Config
+	Timeout            time.Duration
 }
 
 type ClientOptions func(*Config)
@@ -46,6 +50,12 @@ func WithHTTPTLSConfig(tlsConfig *tls.Config) ClientOptions {
 	return func(c *Config) {
 		c.Insecure = false
 		c.TlsConfig = tlsConfig
+	}
+}
+
+func WithTimeout(timeout time.Duration) ClientOptions {
+	return func(c *Config) {
+		c.Timeout = timeout
 	}
 }
 
