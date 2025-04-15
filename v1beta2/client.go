@@ -3,8 +3,9 @@ package v1beta1
 import (
 	"context"
 	"fmt"
-	"github.com/project-kessel/inventory-client-go/common"
 	nethttp "net/http"
+
+	"github.com/project-kessel/inventory-client-go/common"
 
 	"github.com/authzed/grpcutil"
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -83,6 +84,10 @@ func NewHttpClient(ctx context.Context, config *common.Config) (*InventoryHttpCl
 
 	if !config.Insecure {
 		opts = append(opts, http.WithTLSConfig(config.TlsConfig))
+	}
+
+	if config.Timeout > 0 {
+		opts = append(opts, http.WithTimeout(config.Timeout))
 	}
 
 	client, err := http.NewClient(ctx, opts...)
