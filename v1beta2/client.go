@@ -19,7 +19,7 @@ type Inventory interface{}
 type InventoryClient struct {
 	KesselResourceService kesselv2.KesselResourceServiceClient
 	KesselCheckService    kesselv2.KesselCheckServiceClient
-	KesselLookupService   kesselv2.KesselLookupServiceClient
+	KesselLookupService   kesselv2.KesselStreamedListServiceClient
 	gRPCConn              *grpc.ClientConn
 	tokenClient           *common.TokenClient
 }
@@ -64,7 +64,7 @@ func New(config *common.Config) (*InventoryClient, error) {
 	return &InventoryClient{
 		KesselResourceService: kesselv2.NewKesselResourceServiceClient(conn),
 		KesselCheckService:    kesselv2.NewKesselCheckServiceClient(conn),
-		KesselLookupService:   kesselv2.NewKesselLookupServiceClient(conn),
+		KesselLookupService:   kesselv2.NewKesselStreamedListServiceClient(conn),
 		gRPCConn:              conn,
 		tokenClient:           tokencli,
 	}, err
