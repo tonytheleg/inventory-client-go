@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	kesselv2 "github.com/project-kessel/inventory-api/api/kessel/inventory/v1beta2"
 	"github.com/project-kessel/inventory-client-go/common"
 	v1beta2 "github.com/project-kessel/inventory-client-go/v1beta2"
@@ -33,7 +34,7 @@ func main() {
 	}
 	request := kesselv2.ReportResourceRequest{
 		Type:               "host",
-		ReporterType:       "HBI",
+		ReporterType:       "hbi",
 		ReporterInstanceId: "1",
 		Representations: &kesselv2.ResourceRepresentations{
 			Metadata: &kesselv2.RepresentationMetadata{
