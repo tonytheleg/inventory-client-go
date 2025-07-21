@@ -3,7 +3,9 @@ package v1beta2
 import (
 	"context"
 	"fmt"
+	"net"
 	nethttp "net/http"
+	"time"
 
 	"github.com/project-kessel/inventory-client-go/common"
 
@@ -31,6 +33,23 @@ var (
 	_ Inventory = &InventoryHttpClient{}
 	_ Inventory = &InventoryClient{}
 )
+
+func defaultTransportDialContext(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {
+	return dialer.DialContext
+}
+
+var InventoryDefaultTransport nethttp.RoundTripper = &nethttp.Transport{
+	Proxy: nethttp.ProxyFromEnvironment,
+	DialContext: defaultTransportDialContext(&net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 0,
+	}),
+	ForceAttemptHTTP2:     true,
+	MaxIdleConns:          100,
+	IdleConnTimeout:       90 * time.Second,
+	TLSHandshakeTimeout:   10 * time.Second,
+	ExpectContinueTimeout: 1 * time.Second,
+}
 
 func New(config *common.Config) (*InventoryClient, error) {
 	var opts []grpc.DialOption
@@ -83,6 +102,8 @@ func NewHttpClient(ctx context.Context, config *common.Config) (*InventoryHttpCl
 	if config.Timeout > 0 {
 		opts = append(opts, http.WithTimeout(config.Timeout))
 	}
+
+	opts = append(opts, http.WithTransport(InventoryDefaultTransport))
 
 	client, err := http.NewClient(ctx, opts...)
 	if err != nil {
