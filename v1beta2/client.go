@@ -5,6 +5,8 @@ import (
 	"fmt"
 	nethttp "net/http"
 
+	"github.com/go-kratos/kratos/v2/selector"
+	"github.com/go-kratos/kratos/v2/selector/wrr"
 	"github.com/project-kessel/inventory-client-go/common"
 
 	"github.com/authzed/grpcutil"
@@ -83,12 +85,16 @@ func NewHttpClient(ctx context.Context, config *common.Config) (*InventoryHttpCl
 	if config.Timeout > 0 {
 		opts = append(opts, http.WithTimeout(config.Timeout))
 	}
-
+	selector.SetGlobalSelector(wrr.NewBuilder())
+	filter := selector.NodeFilter(
+		func(context.Context, []selector.Node) []selector.Node {
+			return []selector.Node{}
+		})
+	opts = append(opts, http.WithNodeFilter(filter))
 	client, err := http.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
-
 	return &InventoryHttpClient{
 		KesselInventoryService: kesselv2.NewKesselInventoryServiceHTTPClient(client),
 		tokenClient:            tokencli,
