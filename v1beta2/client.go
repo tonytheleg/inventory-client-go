@@ -3,6 +3,7 @@ package v1beta2
 import (
 	"context"
 	"fmt"
+	"log"
 	nethttp "net/http"
 
 	"github.com/go-kratos/kratos/v2/selector"
@@ -95,6 +96,7 @@ func NewHttpClient(ctx context.Context, config *common.Config) (*InventoryHttpCl
 	if err != nil {
 		return nil, err
 	}
+	log.Println("[INFO] Kessel inventory http client initialized with wrr balancer")
 	return &InventoryHttpClient{
 		KesselInventoryService: kesselv2.NewKesselInventoryServiceHTTPClient(client),
 		tokenClient:            tokencli,
